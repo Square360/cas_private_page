@@ -1,0 +1,63 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the CAS Private Page module.
+ */
+
+use Drupal\field\Entity\FieldStorageConfig;
+use Drupal\field\Entity\FieldConfig;
+
+/**
+ * Implements hook_install().
+ */
+function cas_private_page_install() {
+  // Create the field storage if it doesn't exist.
+  if (!FieldStorageConfig::loadByName('node', 'field_require_cas')) {
+    FieldStorageConfig::create([
+      'field_name' => 'field_require_cas',
+      'entity_type' => 'node',
+      'type' => 'boolean',
+      'cardinality' => 1,
+      'settings' => [],
+    ])->save();
+  }
+
+  // Add the field to all node types.
+  foreach (\Drupal\node\Entity\NodeType::loadMultiple() as $type) {
+    if (!FieldConfig::loadByName('node', $type->id(), 'field_require_cas')) {
+      FieldConfig::create([
+        'field_name' => 'field_require_cas',
+        'entity_type' => 'node',
+        'bundle' => $type->id(),
+        'label' => 'Require CAS to View',
+        'required' => FALSE,
+        'default_value' => [['value' => 0]],
+        'description' => 'Check this box to require CAS authentication to view this page.',
+        'settings' => [
+          'on_label' => 'True',
+          'off_label' => 'False',
+        ],
+      ])->save();
+    }
+  }
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function cas_private_page_uninstall() {
+  // Remove the field from all node types.
+  foreach (\Drupal\node\Entity\NodeType::loadMultiple() as $type) {
+    $field = FieldConfig::loadByName('node', $type->id(), 'field_require_cas');
+    if ($field) {
+      $field->delete();
+    }
+  }
+
+  // Remove the field storage.
+  $field_storage = FieldStorageConfig::loadByName('node', 'field_require_cas');
+  if ($field_storage) {
+    $field_storage->delete();
+  }
+}

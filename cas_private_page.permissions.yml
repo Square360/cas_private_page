@@ -1,0 +1,3 @@
+edit cas private page field:
+  title: 'Edit "Require CAS to View" field'
+  description: 'Allow users to set the CAS private field on nodes.'

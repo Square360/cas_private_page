@@ -1,0 +1,7 @@
+name: 'CAS Private Page'
+type: module
+description: 'Allows editors to require CAS login for specific nodes.'
+core_version_requirement: ^10 || ^11
+package: 'Custom'
+dependencies:
+  - cas:cas

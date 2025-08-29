@@ -1,0 +1,6 @@
+services:
+  cas_private_page.subscriber:
+    class: Drupal\cas_private_page\EventSubscriber\CasPrivatePageSubscriber
+    arguments: ['@current_user', '@cas.redirector']
+    tags:
+      - { name: event_subscriber }

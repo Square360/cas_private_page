@@ -1,0 +1,51 @@
+<?php
+
+/**
+ * @file
+ * Main module file for CAS Private Page.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements hook_form_node_form_alter().
+ */
+function cas_private_page_form_node_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $node = $form_state->getFormObject()->getEntity();
+
+  // Check if the node has the CAS field and user has permission.
+  if ($node->hasField('field_require_cas') && \Drupal::currentUser()->hasPermission('edit cas private page field')) {
+
+    // Move the field to the sidebar if it exists in the form.
+    if (isset($form['field_require_cas'])) {
+      // Ensure sidebar group exists.
+      if (!isset($form['sidebar'])) {
+        $form['sidebar'] = [
+          '#type' => 'details',
+          '#title' => t('Node Privacy'),
+          '#group' => 'advanced',
+          '#attributes' => [
+            'class' => ['node-form-options'],
+          ],
+          '#attached' => [
+            'library' => ['node/drupal.node'],
+          ],
+          '#weight' => 99,
+        ];
+      }
+
+      // Move the field to sidebar.
+      $form['sidebar']['field_require_cas'] = $form['field_require_cas'];
+      $form['sidebar']['field_require_cas']['#group'] = 'sidebar';
+
+      // Remove from original location.
+      unset($form['field_require_cas']);
+    }
+  }
+  else {
+    // If user doesn't have permission, hide the field.
+    if (isset($form['field_require_cas'])) {
+      $form['field_require_cas']['#access'] = FALSE;
+    }
+  }
+}
