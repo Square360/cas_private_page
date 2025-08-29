@@ -1,5 +1,5 @@
 {
     "name": "square360/cas_private_page",
     "description": "Provides editors ability to make a page require CAS to view",
-    "type": "drupal-custom-module"
+    "type": "drupal-module"
 }
